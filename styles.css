@@ -1,0 +1,71 @@
+/* General Styles */
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(to bottom, #FF6B6B, #4ECDC4);
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  max-width: 480px;
+  width: 100%;
+  padding: 16px;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+button {
+  background: white;
+  color: #FF6B6B;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+.bg-white {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.completed {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.checkbox {
+  transform: scale(1.2);
+  margin-right: 10px;
+}
+
