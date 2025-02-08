@@ -1,94 +1,87 @@
-let step = 1;
-let name = "";
-let tasks = [];
-let newTask = {
-  title: "",
-  description: "",
-  date: "",
-  completed: false,
-};
+document.addEventListener("DOMContentLoaded", loadTasks);
+document.getElementById("task-form").addEventListener("submit", addTask);
+function loadTasks() {
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.forEach(task =>   displayTask(task));
+}
 
-function renderApp() {
-  const app = document.getElementById("app");
+function addTask(event) 
+{
+    event.preventDefault();
+    
+    const title = document.getElementById("task-title").value;
+    const description = document.getElementById("task-desc").value;
+    const dueDate = document.getElementById("task-due-date").value;
+    const priority = document.getElementById("task-priority").value;
 
-  if (step === 1) {
-    app.innerHTML = `
-      <div class="flex-center">
-        <h1>To Do ✓</h1>
-        <p>Organize along with me</p>
-        <button onclick="nextStep()">Get Started</button>
-      </div>
+    const 
+    task = {
+        title,
+        description,
+        dueDate,
+        priority,
+        completed: false
+    };
+
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.push(task);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+
+    displayTask(task);
+    
+    // Clear the input fields
+    document.getElementById("task-form").reset();
+}
+
+function displayTask(task) {
+    const taskList = document.getElementById("task-list");
+    const li = document.createElement("li");
+    li.className = task.completed ? "completed" : "";
+
+    li.innerHTML = `
+        <span class="task-title">${task.title} (Due: ${task.dueDate})</span>
+        <span class="task-priority">${task.priority}</span>
+        <button class="edit-button" onclick="editTask(this)">Edit</button>
+        <button class="delete-button" onclick="deleteTask(this)">Delete</button>
     `;
-  } else if (step === 2) {
-    app.innerHTML = `
-      <div class="flex-center">
-        <h2>What's your name?</h2>
-        <input type="text" id="username" placeholder="Enter your name">
-        <button onclick="saveName()">Continue</button>
-      </div>
-    `;
-  } else if (step === 3) {
-    const tasksHTML = tasks
-      .map(
-        (task, index) => `
-        <div class="bg-white task">
-          <input type="checkbox" class="checkbox" ${
-            task.completed ? "checked" : ""
-          } onchange="toggleTask(${index})">
-          <div class="${task.completed ? "completed" : ""}">
-            <h3>${task.title}</h3>
-            <p>${task.description}</p>
-            <p>Due: ${task.date}</p>
-          </div>
-        </div>
-      `
-      )
-      .join("");
-
-    app.innerHTML = `
-      <h2>Hi ${name}! 👋</h2>
-      <div class="bg-white">
-        <input type="text" id="title" placeholder="Task Title">
-        <textarea id="description" placeholder="Task Description"></textarea>
-        <input type="date" id="date">
-        <button onclick="addTask()">Add Task +</button>
-      </div>
-      <div>
-        ${tasksHTML}
-      </div>
-    `;
-  }
+    taskList.appendChild(li);
 }
 
-function nextStep() {
-  step = 2;
-  renderApp();
+function editTask(button) {
+    const li = button.parentElement;
+    const title = li.querySelector(".task-title").textContent.split(" (Due:")[0];
+    const dueDate = li.querySelector(".task-title").textContent.split("(Due: ")[1].replace(')', '');
+    const priority = li.querySelector(".task-priority").textContent;
+
+    document.getElementById("task-title").value = title;
+    document.getElementById("task-due-date").value = dueDate;
+    document.getElementById("task-priority").value = priority;
+
+    deleteTask(button); // Remove the task being edited
 }
 
-function saveName() {
-  const usernameInput = document.getElementById("username");
-  if (usernameInput.value) {
-    name = usernameInput.value;
-    step = 3;
-    renderApp();
-  }
+function deleteTask(button) {
+    const li = button.parentElement;
+    const taskTitle = li.querySelector(".task-title").textContent;
+
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks = tasks.filter(task => task.title !== taskTitle);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+
+    li.remove(); // Remove the task from the UI
 }
 
-function addTask() {
-  const title = document.getElementById("title").value;
-  const description = document.getElementById("description").value;
-  const date = document.getElementById("date").value;
+function toggleCompletion(button) {
+    const li = button.parentElement;
+    const title = li.querySelector(".task-title").textContent;
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-  if (title && description && date) {
-    tasks.push({ title, description, date, completed: false });
-    renderApp();
-  }
+    tasks = tasks.map(task=> {
+        if (task.title === title){
+            task.completed = !task.completed; // Toggle the completion status
+            li.classList.toggle("completed");// updATE UI BASED ON COMPLETION
+        }
+        return task;
+    });
+    localStorage.setItem("tasks",JSON.stringify(tasks));
 }
-
-function toggleTask(index) {
-  tasks[index].completed = !tasks[index].completed;
-  renderApp();
-}
-
-renderApp();
-
